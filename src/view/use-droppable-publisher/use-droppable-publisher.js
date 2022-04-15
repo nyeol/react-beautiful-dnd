@@ -23,6 +23,7 @@ import type {
   Direction,
   ScrollOptions,
   DroppableMode,
+  DroppableRangeType,
 } from '../../types';
 import getDimension from './get-dimension';
 import AppContext, { type AppContextValue } from '../context/app-context';
@@ -38,6 +39,7 @@ type Props = {|
   type: TypeId,
   mode: DroppableMode,
   direction: Direction,
+  droppableRangeType: DroppableRangeType,
   isDropDisabled: boolean,
   isCombineEnabled: boolean,
   ignoreContainerClipping: boolean,
@@ -66,8 +68,9 @@ export default function useDroppablePublisher(args: Props) {
       id: args.droppableId,
       type: args.type,
       mode: args.mode,
+	  droppableRangeType: args.droppableRangeType,
     }),
-    [args.droppableId, args.mode, args.type],
+    [args.droppableId, args.mode, args.type, args.droppableRangeType],
   );
   const publishedDescriptorRef = useRef<DroppableDescriptor>(descriptor);
 

@@ -90,6 +90,7 @@ export default ({
       previousImpact: state.impact,
       viewport,
       afterCritical: state.afterCritical,
+	  droppableRangeType: state.critical.droppable.droppableRangeType,
     });
 
   const withUpdatedPlaceholders: DroppableDimensionMap = recomputePlaceholders({

@@ -6,6 +6,7 @@ import type {
   DroppableId,
   DraggableDimension,
   Axis,
+  DroppableOverRangeType,
 } from '../types';
 import { toDroppableList } from './dimension-structures';
 import isPositionInFrame from './visibility/is-position-in-frame';
@@ -27,6 +28,7 @@ type Args = {|
   pageBorderBox: Rect,
   draggable: DraggableDimension,
   droppables: DroppableDimensionMap,
+  droppableOverRangeType: DroppableOverRangeType,
 |};
 
 type WithDistance = {|
@@ -80,6 +82,7 @@ export default function getDroppableOver({
   pageBorderBox,
   draggable,
   droppables,
+  droppableRangeType,
 }: Args): ?DroppableId {
   // We know at this point that some overlap has to exist
   const candidates: DroppableDimension[] = toDroppableList(droppables).filter(
@@ -95,14 +98,18 @@ export default function getDroppableOver({
         return false;
       }
 
+	  if(droppableRangeType === 'infinite') {
+		return true;
+	  }
 
-	  console.log('getHasOverlap(pageBorderBox, active)', getHasOverlap(pageBorderBox, active));
       // Cannot be a candidate when dragging item is not over the droppable at all
       if (!getHasOverlap(pageBorderBox, active)) {
         return false;
       }
 
-	  return true;
+	  if(droppableRangeType === 'overlap') {
+		return true;
+	  }
 
       // 1. Candidate if the center position is over a droppable
       if (isPositionInFrame(active)(pageBorderBox.center)) {

@@ -33,6 +33,8 @@ export type DraggableOptions = {|
 
 export type Direction = 'horizontal' | 'vertical';
 
+export type DroppableRangeType = 'center' | 'overlap' | 'infinite';
+
 export type VerticalAxis = {|
   direction: 'vertical',
   line: 'y',

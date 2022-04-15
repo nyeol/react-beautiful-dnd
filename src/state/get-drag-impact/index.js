@@ -9,6 +9,7 @@ import type {
   DragImpact,
   Viewport,
   LiftEffect,
+  DroppableRangeType,
 } from '../../types';
 import getDroppableOver from '../get-droppable-over';
 import getDraggablesInsideDroppable from '../get-draggables-inside-droppable';
@@ -27,6 +28,7 @@ type Args = {|
   previousImpact: DragImpact,
   viewport: Viewport,
   afterCritical: LiftEffect,
+  droppableRangeType: DroppableRangeType,
 |};
 
 export default ({
@@ -37,6 +39,7 @@ export default ({
   previousImpact,
   viewport,
   afterCritical,
+  droppableRangeType,
 }: Args): DragImpact => {
   const pageBorderBox: Rect = offsetRectByPosition(
     draggable.page.borderBox,
@@ -47,6 +50,7 @@ export default ({
     pageBorderBox,
     draggable,
     droppables,
+	droppableRangeType,
   });
 
   // not dragging over anything

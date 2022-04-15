@@ -117,6 +117,7 @@ export default ({
     previousImpact,
     viewport: state.viewport,
     afterCritical,
+	DroppableRangeType: state.critical.droppable.DroppableRangeType,
   });
 
   timings.finish(timingsKey);
