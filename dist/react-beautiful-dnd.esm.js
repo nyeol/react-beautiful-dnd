@@ -1845,7 +1845,8 @@ function getFurthestAway(_ref) {
 function getDroppableOver$1(_ref2) {
   var pageBorderBox = _ref2.pageBorderBox,
       draggable = _ref2.draggable,
-      droppables = _ref2.droppables;
+      droppables = _ref2.droppables,
+      droppableRangeType = _ref2.droppableRangeType;
   var candidates = toDroppableList(droppables).filter(function (item) {
     if (!item.isEnabled) {
       return false;
@@ -1857,13 +1858,39 @@ function getDroppableOver$1(_ref2) {
       return false;
     }
 
-    console.log('getHasOverlap(pageBorderBox, active)', getHasOverlap(pageBorderBox, active));
+    if (droppableRangeType === 'infinite') {
+      return true;
+    }
 
     if (!getHasOverlap(pageBorderBox, active)) {
       return false;
     }
 
-    return true;
+    if (droppableRangeType === 'overlap') {
+      return true;
+    }
+
+    if (isPositionInFrame(active)(pageBorderBox.center)) {
+      return true;
+    }
+
+    var axis = item.axis;
+    var childCenter = active.center[axis.crossAxisLine];
+    var crossAxisStart = pageBorderBox[axis.crossAxisStart];
+    var crossAxisEnd = pageBorderBox[axis.crossAxisEnd];
+    var isContained = isWithin(active[axis.crossAxisStart], active[axis.crossAxisEnd]);
+    var isStartContained = isContained(crossAxisStart);
+    var isEndContained = isContained(crossAxisEnd);
+
+    if (!isStartContained && !isEndContained) {
+      return true;
+    }
+
+    if (isStartContained) {
+      return crossAxisStart < childCenter;
+    }
+
+    return crossAxisEnd > childCenter;
   });
 
   if (!candidates.length) {
@@ -2044,12 +2071,14 @@ var getDragImpact = (function (_ref) {
       droppables = _ref.droppables,
       previousImpact = _ref.previousImpact,
       viewport = _ref.viewport,
-      afterCritical = _ref.afterCritical;
+      afterCritical = _ref.afterCritical,
+      droppableRangeType = _ref.droppableRangeType;
   var pageBorderBox = offsetRectByPosition(draggable.page.borderBox, pageOffset);
   var destinationId = getDroppableOver$1({
     pageBorderBox: pageBorderBox,
     draggable: draggable,
-    droppables: droppables
+    droppables: droppables,
+    droppableRangeType: droppableRangeType
   });
 
   if (!destinationId) {
@@ -2183,7 +2212,8 @@ var update = (function (_ref) {
     droppables: dimensions.droppables,
     previousImpact: state.impact,
     viewport: viewport,
-    afterCritical: state.afterCritical
+    afterCritical: state.afterCritical,
+    droppableRangeType: state.critical.droppable.droppableRangeType
   });
   var withUpdatedPlaceholders = recomputePlaceholders({
     draggable: draggable,
@@ -2456,7 +2486,8 @@ var publishWhileDraggingInVirtual = (function (_ref) {
     droppables: dimensions.droppables,
     previousImpact: previousImpact,
     viewport: state.viewport,
-    afterCritical: afterCritical
+    afterCritical: afterCritical,
+    DroppableRangeType: state.critical.droppable.DroppableRangeType
   });
   finish();
 
@@ -7247,9 +7278,10 @@ function useDroppablePublisher(args) {
     return {
       id: args.droppableId,
       type: args.type,
-      mode: args.mode
+      mode: args.mode,
+      droppableRangeType: args.droppableRangeType
     };
-  }, [args.droppableId, args.mode, args.type]);
+  }, [args.droppableId, args.mode, args.type, args.droppableRangeType]);
   var publishedDescriptorRef = useRef(descriptor);
   var memoizedUpdateScroll = useMemo(function () {
     return memoizeOne(function (x, y) {
@@ -8229,6 +8261,7 @@ function Droppable(props) {
       type = props.type,
       mode = props.mode,
       direction = props.direction,
+      droppableRangeType = props.droppableRangeType,
       ignoreContainerClipping = props.ignoreContainerClipping,
       isDropDisabled = props.isDropDisabled,
       isCombineEnabled = props.isCombineEnabled,
@@ -8265,6 +8298,7 @@ function Droppable(props) {
     type: type,
     mode: mode,
     direction: direction,
+    droppableRangeType: droppableRangeType,
     isDropDisabled: isDropDisabled,
     isCombineEnabled: isCombineEnabled,
     ignoreContainerClipping: ignoreContainerClipping,
