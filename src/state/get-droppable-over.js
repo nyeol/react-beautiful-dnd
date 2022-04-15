@@ -95,10 +95,14 @@ export default function getDroppableOver({
         return false;
       }
 
+
+	  console.log('getHasOverlap(pageBorderBox, active)', getHasOverlap(pageBorderBox, active));
       // Cannot be a candidate when dragging item is not over the droppable at all
       if (!getHasOverlap(pageBorderBox, active)) {
         return false;
       }
+
+	  return true;
 
       // 1. Candidate if the center position is over a droppable
       if (isPositionInFrame(active)(pageBorderBox.center)) {
